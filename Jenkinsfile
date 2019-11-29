@@ -32,7 +32,7 @@ pipeline {
         }
         stage ('Build') {
             steps {
-                echo 'Primer pipeline.'
+                echo 'Primer pipeline'
             }
         }
     }
