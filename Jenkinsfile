@@ -13,7 +13,23 @@ pipeline {
                 ''' 
             }
         }
+        stage ('Start inicio release'){
+            try{
+                steps {
+                    sh '''
+                        echo comenzando versión
+                    '''
 
+                    sh "mvn -X gitflow:release-start"
+
+                    }
+                }
+            catch (exc) {
+            println "Fallo en la  compilación- ${currentBuild.fullDisplayName}"
+            throw (exc)
+            }    
+            
+        }
         stage ('Build') {
             steps {
                 echo 'Primer pipeline.'
