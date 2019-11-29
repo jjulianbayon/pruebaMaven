@@ -1,26 +1,28 @@
-#!groovy
-
-    stage('Compile') {
-        
-            
-                    sh "echo Compiling"
-                    sh "mvn -B compile "
-                
+pipeline {
+    agent any
+    tools {
+        maven 'Maven 3.3.9'
+        jdk 'jdk8'
+    }
+    stages {
+        stage ('Initialize') {
+            steps {
+                sh '''
+                    echo "PATH = ${PATH}"
+                    echo "M2_HOME = ${M2_HOME}"
+                '''
             }
-      
-    stage   ('Cache') {
-             
-                    sh "echo Updating Caches"
-                    uploadCache key:cache_name, paths:[maven_local_repo]
-                
-            }       
+        }
 
-
-    stage('Test') {
-       
-                    sh "echo Running coverage"
-                    sh "mvn -B scoverage:report "
-                    stash name: 'coverage', includes: 'target/scoverage.xml'
-                
+        stage ('Build') {
+            steps {
+                sh 'mvn -Dmaven.test.failure.ignore=true install' 
             }
-
+            post {
+                success {
+                    junit 'target/surefire-reports/**/*.xml' 
+                }
+            }
+        }
+    }
+}
